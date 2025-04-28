@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Call Data Viewer</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+    th { background-color: #f4f4f4; }
+    .transcript {
+      background-color: #eef;
+      padding: 10px;
+      margin: 10px 0;
+      display: none;
+    }
+    button {
+      padding: 5px 10px;
+      margin: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Call Data Viewer</h1>
+
+  <div id="baseData"></div>
+
+  <table id="callTable">
+    <thead>
+      <tr>
+        <th>ToNumber</th>
+        <th>Doorgestuurd</th>
+        <th>Teruggebeld</th>
+        <th>FoutGesprek</th>
+        <th>Callinfo</th>
+        <th>Afgesloten</th>
+        <th>Afspraak Gepland</th>
+        <th>Datetime</th>
+        <th>Transcriptie</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const ws = new WebSocket('wss://lucy.kprs-ai.online/LivaData');
+
+    const baseDataDiv = document.getElementById('baseData');
+    const callTableBody = document.getElementById('callTable').querySelector('tbody');
+
+    const calls = [];
+    const openTranscripts = new Set(); // ❗️ Hier bewaren we welke open staan
+
+    ws.onopen = () => {
+      console.log('WebSocket connected');
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.type === 'callData') {
+        // Show base data
+        baseDataDiv.innerHTML = `
+          <p><strong>Active Calls:</strong> ${msg.data.ActiveCalls}</p>
+          <p><strong>Successful Calls:</strong> ${msg.data.SuccesfulCalls}</p>
+          <p><strong>Calls in last 8h:</strong> ${msg.data.Calls8Hours}</p>
+          <p><strong>Calls in last hour:</strong> ${msg.data.CallsHours}</p>
+          <p><strong>Datetime:</strong> ${msg.data.Datetime}</p>
+        `;
+
+        const callIds = msg.data.callId;
+        for (const id in callIds) {
+          const call = callIds[id];
+
+          const callData = {
+            CallId: id, // ❗️ Unieke ID opslaan
+            ToNumber: call.ToNumberr || '-',
+            Doorgestuurd: call.Doorgestuurd,
+            Teruggebeld: call.Teruggebeld,
+            FoutGesprek: call.FoutGesprek,
+            Callinfo: call.callinfo || '-',
+            Closed: call.Closed,
+            AfspraakGepland: call.Afspraak && call.Afspraak.Id ? true : false,
+            Datetime: call.Datetime || '-',
+            Transcript: call.Transcript?.FullTranscript || []
+          };
+
+          // Check of call al bestaat
+          const existingIndex = calls.findIndex(c => c.CallId === id);
+          if (existingIndex !== -1) {
+            calls[existingIndex] = callData; // update bestaande call
+          } else {
+            calls.unshift(callData); // nieuwe call toevoegen bovenaan
+          }
+        }
+
+        updateTable();
+      }
+    };
+
+    function updateTable() {
+      const previouslyOpen = new Set(openTranscripts); // kopie van open transcripties
+      openTranscripts.clear(); // reset voor nieuwe check
+
+      callTableBody.innerHTML = '';
+
+      calls.forEach((call, index) => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+          <td>${call.ToNumber}</td>
+          <td><input type="checkbox" ${call.Doorgestuurd ? 'checked' : ''} disabled></td>
+          <td><input type="checkbox" ${call.Teruggebeld ? 'checked' : ''} disabled></td>
+          <td><input type="checkbox" ${call.FoutGesprek ? 'checked' : ''} disabled></td>
+          <td>${call.Callinfo}</td>
+          <td><input type="checkbox" ${call.Closed ? 'checked' : ''} disabled></td>
+          <td><input type="checkbox" ${call.AfspraakGepland ? 'checked' : ''} disabled></td>
+          <td>${call.Datetime}</td>
+          <td><button onclick="toggleTranscript('${call.CallId}')">Show Transcript</button></td>
+        `;
+
+        callTableBody.appendChild(row);
+
+        const transcriptRow = document.createElement('tr');
+        transcriptRow.innerHTML = `
+          <td colspan="9">
+            <div id="transcript-${call.CallId}" class="transcript">
+              ${call.Transcript.length > 0 
+                ? call.Transcript.map(t => `<p><strong>${t.role}:</strong> ${t.content}</p>`).join('')
+                : '<p><em>No transcript available</em></p>'
+              }
+            </div>
+          </td>
+        `;
+        callTableBody.appendChild(transcriptRow);
+
+        // Als deze transcript open was, weer open zetten
+        if (previouslyOpen.has(call.CallId)) {
+          document.getElementById(`transcript-${call.CallId}`).style.display = 'block';
+          openTranscripts.add(call.CallId);
+        }
+      });
+    }
+
+    function toggleTranscript(callId) {
+      const el = document.getElementById(`transcript-${callId}`);
+      if (el.style.display === 'none' || el.style.display === '') {
+        el.style.display = 'block';
+        openTranscripts.add(callId); // ❗️ opslaan dat hij open is
+      } else {
+        el.style.display = 'none';
+        openTranscripts.delete(callId); // ❗️ verwijderen uit de open lijst
+      }
+    }
+  </script>
+</body>
+</html>
