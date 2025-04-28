@@ -15,11 +15,28 @@
             background-color: #f3f4f6;
             color: #1f2937;
         }
+        .container {
+            max-width: 1200px; /* Add a max width for better readability on large screens */
+            margin: 0 auto;
+        }
         h1 {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem; /* Reduced margin */
             color: #4f46e5;
         }
+        #environmentSwitch {
+            text-align: center;
+            margin-bottom: 2rem; /* Add margin below the switch */
+        }
+        #environmentSwitch button {
+            margin: 0 0.5rem; /* Space between buttons */
+        }
+        #environmentSwitch button.active {
+            background-color: #3730a3; /* Darker background for active button */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* Inset shadow for active */
+            transform: none; /* Remove translateY */
+        }
+
         #baseData {
             background-color: white;
             padding: 1.5rem;
@@ -52,6 +69,52 @@
             border-bottom: 1px solid #e5e7eb;
             text-align: center;
         }
+         /* Adjust text alignment for left-aligned details cells in responsive view */
+        @media (max-width: 768px) {
+            #callTable tbody td[data-label],
+            #callTable tbody td:not([data-label]) {
+                 text-align: left; /* Ensure all cells in responsive mode are left-aligned */
+                 padding-left: 0.75rem; /* Add padding */
+                 padding-right: 0.75rem; /* Add padding */
+            }
+             #callTable tbody td:not([data-label]):before {
+                 content: ''; /* Hide the label for non-data-label cells like the details row */
+             }
+            #callTable tbody tr td:first-child { /* Keep the first cell (ToNumber) consistent */
+                 padding-top: 0.75rem;
+            }
+             #callTable tbody tr td:last-child { /* Adjust padding for the last cell (Doorsturen) */
+                 padding-bottom: 0.75rem;
+                 border-bottom: none; /* No border on the last cell */
+            }
+            #callTable tbody tr {
+                margin-bottom: 1.5rem;
+                display: block; /* Make rows stack */
+            }
+             #callTable tbody tr:last-child {
+                 margin-bottom: 0; /* No margin after the last stacked row */
+             }
+             #callTable tbody tr:nth-child(odd) {
+                background-color: white; /* Remove odd background on stacked rows */
+             }
+
+
+             .transcript {
+                 margin-left: 0; /* Adjusted for new mobile layout */
+                 margin-right: 0; /* Adjusted for new mobile layout */
+                 padding: 0.75rem; /* Adjust padding */
+             }
+
+             .collapsible-content {
+                 padding: 0.75rem; /* Adjust padding */
+             }
+             .collapsible {
+                 margin-bottom: 0.5rem; /* Adjust margin */
+                 margin-top: 0.5rem; /* Add margin */
+             }
+        }
+
+
         #callTable tbody tr:last-child td {
             border-bottom: none;
         }
@@ -61,35 +124,7 @@
         #callTable tbody tr:hover {
             background-color: #ecf0fa;
         }
-        .transcript {
-            background-color: #f9fafb;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0.5rem;
-            display: none;
-            border: 1px solid #e5e7eb;
-        }
-        button {
-            padding: 0.75rem 1.5rem;
-            margin: 0.5rem;
-            cursor: pointer;
-            border-radius: 0.5rem;
-            background-color: #4f46e5;
-            color: white;
-            font-weight: 500;
-            border: none;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-        button:hover {
-            background-color: #4338ca;
-            transform: translateY(-2px);
-        }
-        button:active {
-            background-color: #3730a3;
-            transform: translateY(0);
-        }
-        /* Style for black and white checkboxes */
+         /* Style for black and white checkboxes */
         input[type="checkbox"] {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -100,6 +135,7 @@
             background-color: #fff;
             cursor: default;
             border-radius: 0.25rem;
+            vertical-align: middle; /* Align checkbox vertically */
         }
         input[type="checkbox"]:checked {
             background-color: #000;
@@ -108,51 +144,7 @@
         input[type="checkbox"]:disabled {
             opacity: 0.7;
         }
-        .checkpoint {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .checkpoint-label {
-            font-weight: 500;
-            color: #374151;
-        }
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            #callTable thead {
-                display: none;
-            }
-            #callTable tbody td {
-                display: block;
-                width: 100%;
-                text-align: left;
-                padding: 0.75rem;
-                border-bottom: 1px solid #e5e7eb;
-            }
-            #callTable tbody tr {
-                margin-bottom: 1.5rem;
-                display: block;
-                border-radius: 0.75rem;
-                background-color: white;
-                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-            }
-            #callTable tbody td:before {
-                content: attr(data-label);
-                font-weight: 600;
-                display: inline-block;
-                width: 120px;
-                margin-right: 0.5rem;
-                color: #4f46e5;
-            }
-            .transcript {
-                margin-left: -1rem;
-                margin-right: -1rem;
-                border-radius: 0;
-            }
-        }
-
-        /* New styles for collapsible sections */
+         /* New styles for collapsible sections */
         .collapsible {
             background-color: #eee;
             color: #444;
@@ -169,6 +161,8 @@
             justify-content: space-between;
             align-items: center;
             font-weight: 500;
+             box-shadow: none; /* Remove button shadow */
+             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         .active, .collapsible:hover {
@@ -191,17 +185,40 @@
 
         .collapsible-arrow {
             transition: transform 0.3s ease;
+             display: inline-block; /* Ensure it's treated as a block for rotation */
         }
 
         .collapsible.active .collapsible-arrow {
             transform: rotate(90deg);
         }
 
+         /* Style for the Doorsturen button */
+         .doorsturen-button {
+             padding: 0.5rem 1rem; /* Smaller padding */
+             margin: 0; /* Remove margin */
+             font-size: 0.9rem; /* Smaller font size */
+             background-color: #10b981; /* Green color */
+         }
+         .doorsturen-button:hover {
+             background-color: #059669;
+             transform: translateY(-1px); /* Smaller lift on hover */
+         }
+         .doorsturen-button:active {
+             background-color: #047857;
+             transform: translateY(0);
+         }
+
+
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Call Data Viewer</h1>
+
+        <div id="environmentSwitch">
+            <button id="lucyBtn" class="active">Lucy</button>
+            <button id="accBtn">ACC</button>
+        </div>
 
         <div id="baseData"></div>
 
@@ -216,88 +233,141 @@
                     <th>Afgesloten</th>
                     <th>Afspraak Gepland</th>
                     <th>Datetime</th>
-                    <th>Details</th> </tr>
+                    <th>Details</th>
+                    <th>Doorsturen</th> </tr>
             </thead>
             <tbody></tbody>
         </table>
     </div>
 
     <script>
-        const ws = new WebSocket('wss://lucy.kprs-ai.online/LivaData');
+        let ws = null;
+        let currentBaseUrl = 'lucy.kprs-ai.online'; // Default to Lucy
 
         const baseDataDiv = document.getElementById('baseData');
         const callTableBody = document.getElementById('callTable').querySelector('tbody');
+        const lucyBtn = document.getElementById('lucyBtn');
+        const accBtn = document.getElementById('accBtn');
 
         const calls = [];
         const openTranscripts = new Set();
 
-        ws.onopen = () => {
-            console.log('WebSocket connected');
-        };
-
-        ws.onmessage = (event) => {
-            const msg = JSON.parse(event.data);
-            if (msg.type === 'callData') {
-                baseDataDiv.innerHTML = `
-                    <div class="bg-white rounded-md shadow-md p-4 mb-4">
-                        <p class="text-gray-700"><strong>Active Calls:</strong> <span class="text-blue-600">${msg.data.ActiveCalls}</span></p>
-                        <p class="text-gray-700"><strong>Calls in 24 Hours:</strong> <span class="text-blue-600">${msg.data.Calls24Hours}</span></p>
-                        <p class="text-gray-700"><strong>Calls in 8 Hours:</strong> <span class="text-blue-600">${msg.data.Calls8Hours}</span></p>
-                        <p class="text-gray-700"><strong>Calls in 1 Hour:</strong> <span class="text-blue-600">${msg.data.CallsHours}</span></p>
-                        <p class="text-gray-700"><strong>Successful Calls:</strong> <span class="text-green-600">${msg.data.SuccesfulCalls}</span></p>
-                        <p class="text-gray-700"><strong>Teruggebeld Amount:</strong> <span class="text-purple-600">${msg.data.TeruggebeldAmount}</span></p>
-                        <p class="text-gray-700"><strong>FoutGesprek Amount:</strong> <span class="text-red-600">${msg.data.FoutGesprekAmount}</span></p>
-                        <p class="text-gray-700"><strong>Doorgestuurd Amount:</strong> <span class="text-yellow-600">${msg.data.DoorgestuurdAmount}</span></p>
-                        <p class="text-gray-700"><strong>WebSocket Server:</strong> <span class="text-indigo-600">${msg.data.WebsocketServer ? 'Online' : 'Offline'}</span></p>
-                        <p class="text-gray-700"><strong>Datetime:</strong> <span class="text-gray-800">${msg.data.Datetime}</span></p>
-                    </div>
-                `;
-
-                const callIds = msg.data.callId;
-                for (const id in callIds) {
-                    const call = callIds[id];
-
-                    const callData = {
-                        CallId: id,
-                        ToNumber: call.ToNumberr || '-',
-                        Doorgestuurd: call.Doorgestuurd,
-                        Teruggebeld: call.Teruggebeld,
-                        FoutGesprek: call.FoutGesprek,
-                        Callinfo: call.callinfo || '-',
-                        Closed: call.Closed,
-                        AfspraakGepland: call.Afspraak && call.Afspraak.Id ? true : false,
-                        Datetime: call.Datetime || '-',
-                        Transcript: call.Transcript?.FullTranscript || [],
-                        Voornaam: call.Voornaam || '-',
-                        Postcode: call.Postcode || '-',
-                        Huisnummer: call.Huisnummer || '-',
-                        Straat: call.Street || '-',
-                        Error: call.Error,
-                        GotName: call.Checkpoints?.GotName || false,
-                        GotAdres: call.Checkpoints?.GotAdres || false,
-                        GotItem: call.Checkpoints?.GotItem || false,
-                        GotCategory: call.Checkpoints?.GotCategory || false,
-                        GotAvailabledates: call.Checkpoints?.GotAvailabledates || false,
-                        GotSelectedDate: call.Checkpoints?.GotSelectedDate || false,
-                        ItemData: call.Item,
-                        AfspraakData: call.Afspraak,
-                        TwillioData: call.Twillio
-                    };
-
-                    const existingIndex = calls.findIndex(c => c.CallId === id);
-                    if (existingIndex !== -1) {
-                        calls[existingIndex] = callData;
-                    } else {
-                        calls.unshift(callData);
-                    }
-                }
-
-                updateTable();
+        function connectWebSocket() {
+            if (ws) {
+                ws.close(); // Close existing connection if any
             }
-        };
+            ws = new WebSocket(`wss://${currentBaseUrl}/LivaData`);
+
+            ws.onopen = () => {
+                console.log(`WebSocket connected to ${currentBaseUrl}`);
+                // Clear existing data when connecting to a new environment
+                calls.length = 0;
+                openTranscripts.clear();
+                updateTable();
+                baseDataDiv.innerHTML = ''; // Clear base data display
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'callData') {
+                    baseDataDiv.innerHTML = `
+                        <div class="bg-white rounded-md shadow-md p-4 mb-4">
+                            <p class="text-gray-700"><strong>Active Calls:</strong> <span class="text-blue-600">${msg.data.ActiveCalls}</span></p>
+                            <p class="text-gray-700"><strong>Calls in 24 Hours:</strong> <span class="text-blue-600">${msg.data.Calls24Hours}</span></p>
+                            <p class="text-gray-700"><strong>Calls in 8 Hours:</strong> <span class="text-blue-600">${msg.data.Calls8Hours}</span></p>
+                            <p class="text-gray-700"><strong>Calls in 1 Hour:</strong> <span class="text-blue-600">${msg.data.CallsHours}</span></p>
+                            <p class="text-gray-700"><strong>Successful Calls:</strong> <span class="text-green-600">${msg.data.SuccesfulCalls}</span></p>
+                            <p class="text-gray-700"><strong>Teruggebeld Amount:</strong> <span class="text-purple-600">${msg.data.TeruggebeldAmount}</span></p>
+                            <p class="text-gray-700"><strong>FoutGesprek Amount:</strong> <span class="text-red-600">${msg.data.FoutGesprekAmount}</span></p>
+                            <p class="text-gray-700"><strong>Doorgestuurd Amount:</strong> <span class="text-yellow-600">${msg.data.DoorgestuurdAmount}</span></p>
+                            <p class="text-gray-700"><strong>WebSocket Server:</strong> <span class="text-indigo-600">${msg.data.WebsocketServer ? 'Online' : 'Offline'}</span></p>
+                            <p class="text-gray-700"><strong>Datetime:</strong> <span class="text-gray-800">${msg.data.Datetime}</span></p>
+                        </div>
+                    `;
+
+                    const callIds = msg.data.callId;
+                    const incomingCalls = [];
+                    for (const id in callIds) {
+                        const call = callIds[id];
+
+                        const callData = {
+                            CallId: id,
+                            ToNumber: call.ToNumberr || '-',
+                            Doorgestuurd: call.Doorgestuurd,
+                            Teruggebeld: call.Teruggebeld,
+                            FoutGesprek: call.FoutGesprek,
+                            Callinfo: call.callinfo || '-',
+                            Closed: call.Closed,
+                            AfspraakGepland: call.Afspraak && call.Afspraak.Id ? true : false,
+                            Datetime: call.Datetime || '-',
+                            Transcript: call.Transcript?.FullTranscript || [],
+                            Voornaam: call.Voornaam || '-',
+                            Postcode: call.Postcode || '-',
+                            Huisnummer: call.Huisnummer || '-',
+                            Straat: call.Street || '-',
+                            Error: call.Error,
+                            GotName: call.Checkpoints?.GotName || false,
+                            GotAdres: call.Checkpoints?.GotAdres || false,
+                            GotItem: call.Checkpoints?.GotItem || false,
+                            GotCategory: call.Checkpoints?.GotCategory || false,
+                            GotAvailabledates: call.Checkpoints?.GotAvailabledates || false,
+                            GotSelectedDate: call.Checkpoints?.GotSelectedDate || false,
+                            ItemData: call.Item,
+                            AfspraakData: call.Afspraak,
+                            TwillioData: call.Twillio
+                        };
+                        incomingCalls.push(callData);
+                    }
+
+                    // Update existing calls or add new ones, preserving order if possible or adding new ones to the top
+                     incomingCalls.forEach(incomingCall => {
+                         const existingIndex = calls.findIndex(c => c.CallId === incomingCall.CallId);
+                         if (existingIndex !== -1) {
+                             calls[existingIndex] = incomingCall; // Update existing
+                         } else {
+                             calls.unshift(incomingCall); // Add new to the beginning
+                         }
+                     });
+
+                     // Optional: Remove calls that are no longer present in the incoming data
+                     const incomingCallIds = new Set(incomingCalls.map(c => c.CallId));
+                     for (let i = calls.length - 1; i >= 0; i--) {
+                         if (!incomingCallIds.has(calls[i].CallId)) {
+                             // Before removing, check if its transcript was open and remove from set
+                             if(openTranscripts.has(calls[i].CallId)) {
+                                 openTranscripts.delete(calls[i].CallId);
+                             }
+                             calls.splice(i, 1); // Remove call no longer in data
+                         }
+                     }
+
+
+                    updateTable();
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                 // Display an error message on the page
+                 baseDataDiv.innerHTML = `<div style="color: red; text-align: center;">WebSocket Error: Could not connect to ${currentBaseUrl}. Please check the server status.</div>`;
+                 callTableBody.innerHTML = ''; // Clear table on error
+                 calls.length = 0; // Clear calls array
+                 openTranscripts.clear();
+            };
+
+             ws.onclose = (event) => {
+                 console.log(`WebSocket closed from ${currentBaseUrl}`, event);
+                 if (!event.wasClean) {
+                     console.error('WebSocket connection died');
+                      // Optionally attempt to reconnect after a delay if it wasn't a clean close
+                     // setTimeout(connectWebSocket, 5000);
+                 }
+             };
+        }
+
 
         function formatDuration(seconds) {
-            if (seconds === null || seconds === undefined) return "-";
+            if (seconds === null || seconds === undefined || isNaN(seconds)) return "-";
             const minutes = Math.floor(seconds / 60);
             const remainingSeconds = seconds % 60;
             return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
@@ -305,13 +375,25 @@
 
         function updateTable() {
             const previouslyOpen = new Set(openTranscripts);
-            openTranscripts.clear();
+            openTranscripts.clear(); // Clear before repopulating based on currently open
 
             callTableBody.innerHTML = '';
+
+            // Sort calls by Datetime descending (most recent first)
+             calls.sort((a, b) => {
+                 const dateA = new Date(a.Datetime);
+                 const dateB = new Date(b.Datetime);
+                 return dateB - dateA; // Descending order
+             });
+
 
             calls.forEach((call, index) => {
                 const row = document.createElement('tr');
                 const callId = call.CallId;
+
+                 // Determine colspan based on number of columns in the header
+                 const colCount = document.querySelectorAll('#callTable thead th').length;
+
 
                 row.innerHTML = `
                     <td data-label="ToNumber">${call.ToNumber}</td>
@@ -323,18 +405,25 @@
                     <td data-label="Afspraak Gepland"><input type="checkbox" ${call.AfspraakGepland ? 'checked' : ''} disabled></td>
                     <td data-label="Datetime">${call.Datetime}</td>
                     <td>
-                        <button class="collapsible" onclick="toggleCollapsible('${callId}')">
+                        <button class="collapsible" onclick="toggleCollapsible('${callId}', this)">
                             Details
                             <span class="collapsible-arrow">&#9654;</span>
                         </button>
                     </td>
+                    <td data-label="Doorsturen">
+                         ${call.Closed ? '-' : `<button class="doorsturen-button" onclick="sendDoorsturen('${callId}', this)">Doorsturen</button>`}
+                    </td>
                 `;
 
-                row.classList.add('mb-4', 'rounded-md', 'bg-white', 'shadow-md');
+                // Add responsive classes if needed - already in CSS, just leaving this commented as a note
+                // row.classList.add('mb-4', 'rounded-md', 'bg-white', 'shadow-md');
                 callTableBody.appendChild(row);
 
+                // Create the details row
                 const detailsRow = document.createElement('tr');
-                detailsRow.innerHTML = `<td colspan="9">
+                 detailsRow.classList.add('details-row'); // Add a class to easily identify details rows
+
+                detailsRow.innerHTML = `<td colspan="${colCount}">
                     <div class="collapsible-content" id="details-${callId}">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -348,69 +437,91 @@
                             </div>
                             <div>
                                 <p><strong>Got Details:</strong></p>
-                                <p>GotName: <input type="checkbox" ${call.GotName ? 'checked' : ''} disabled></p>
-                                <p>GotAdres: <input type="checkbox" ${call.GotAdres ? 'checked' : ''} disabled></p>
-                                <p>GotItem: <button onclick="showItemData('${callId}')">Show Item Data</button></p>
-                                <p>GotCategory: <input type="checkbox" ${call.GotCategory ? 'checked' : ''} disabled></p>
-                                <p>GotAvailabledates: <input type="checkbox" ${call.GotAvailabledates ? 'checked' : ''} disabled></p>
-                                <p>GotSelectedDate: <button onclick="showAfspraakData('${callId}')">Show Afspraak Data</button></p>
+                                <div class="checkpoint">
+                                    <span class="checkpoint-label">GotName:</span>
+                                    <input type="checkbox" ${call.GotName ? 'checked' : ''} disabled>
+                                </div>
+                                 <div class="checkpoint">
+                                    <span class="checkpoint-label">GotAdres:</span>
+                                    <input type="checkbox" ${call.GotAdres ? 'checked' : ''} disabled>
+                                </div>
+                                 <div class="checkpoint">
+                                    <span class="checkpoint-label">GotItem:</span>
+                                    <button onclick="showItemData('${callId}')">Show Item Data</button>
+                                </div>
+                                 <div class="checkpoint">
+                                    <span class="checkpoint-label">GotCategory:</span>
+                                    <input type="checkbox" ${call.GotCategory ? 'checked' : ''} disabled>
+                                </div>
+                                 <div class="checkpoint">
+                                    <span class="checkpoint-label">GotAvailabledates:</span>
+                                    <input type="checkbox" ${call.GotAvailabledates ? 'checked' : ''} disabled>
+                                </div>
+                                 <div class="checkpoint">
+                                    <span class="checkpoint-label">GotSelectedDate:</span>
+                                     ${call.AfspraakGepland ? `<button onclick="showAfspraakData('${callId}')">Show Afspraak Data</button>` : '<em>Not Set</em>'}
+                                 </div>
                             </div>
                             <div>
                                 <p><strong>Personal Details:</strong></p>
-                                <p>Voornaam: ${call.Voornaam}</p>
-                                <p>Postcode: ${call.Postcode}</p>
-                                <p>Huisnummer: ${call.Huisnummer}</p>
-                                <p>Straat: ${call.Straat}</p>
-                                <p>Error: <input type="checkbox" ${call.Error ? 'checked' : ''} disabled></p>
+                                <p><strong>Voornaam:</strong> ${call.Voornaam}</p>
+                                <p><strong>Postcode:</strong> ${call.Postcode}</p>
+                                <p><strong>Huisnummer:</strong> ${call.Huisnummer}</p>
+                                <p><strong>Straat:</strong> ${call.Straat}</p>
+                                <p><strong>Error:</strong> <input type="checkbox" ${call.Error ? 'checked' : ''} disabled></p>
                             </div>
                             <div>
                                 <p><strong>Call Details:</strong></p>
-                                <p>Duration: ${formatDuration(parseInt(call.TwillioData?.Duration))}</p>
-                                <p>Recording URL: ${call.Closed ? `<a href="${call.TwillioData?.RecordingURL}" target="_blank">Recording</a>` : '-'}</p>
+                                <p><strong>Duration:</strong> ${formatDuration(parseInt(call.TwillioData?.Duration))}</p>
+                                <p><strong>Recording URL:</strong> ${call.Closed && call.TwillioData?.RecordingURL ? `<a href="${call.TwillioData.RecordingURL}" target="_blank">Recording</a>` : '-'}</p>
                             </div>
                         </div>
                     </div>
                 </td></tr>`;
                 callTableBody.appendChild(detailsRow);
 
+
+                // Re-open previously open details sections
                 if (previouslyOpen.has(callId)) {
-                    document.getElementById(`details-${callId}`).classList.add('show');
-                    const button = document.querySelector(`[onclick="toggleCollapsible('${callId}')"]`);
-                    if (button) {
-                        button.classList.add('active');
+                    const content = document.getElementById(`details-${callId}`);
+                    const button = row.querySelector('.collapsible');
+                    if (content && button) {
+                         content.classList.add('show');
+                         button.classList.add('active');
+                         const arrow = button.querySelector('.collapsible-arrow');
+                         if (arrow) {
+                             arrow.style.transform = 'rotate(90deg)'; // Directly apply style as class toggle might be tricky here
+                         }
+                        openTranscripts.add(callId); // Add back to the set
                     }
-                    openTranscripts.add(callId);
                 }
             });
         }
 
-
-
-        function toggleCollapsible(callId) {
+        // Modified toggleCollapsible to accept the button element
+        function toggleCollapsible(callId, button) {
             const content = document.getElementById(`details-${callId}`);
-            const button = document.querySelector(`[onclick="toggleCollapsible('${callId}')"]`);
-
+            const arrow = button.querySelector('.collapsible-arrow');
 
             if (content.classList.contains('show')) {
                 content.classList.remove('show');
-                openTranscripts.delete(callId);
-                if (button) {
-                  button.classList.remove('active');
+                button.classList.remove('active');
+                if (arrow) {
+                    arrow.style.transform = 'rotate(0deg)'; // Reset rotation
                 }
+                openTranscripts.delete(callId);
             } else {
                 content.classList.add('show');
-                openTranscripts.add(callId);
-                 if (button) {
-                    button.classList.add('active');
-                }
-            }
-             if (button) {
-                const arrow = button.querySelector('.collapsible-arrow');
+                button.classList.add('active');
                 if (arrow) {
-                    arrow.classList.toggle('collapsible-arrow');
+                     arrow.style.transform = 'rotate(90deg)'; // Rotate
                 }
+                openTranscripts.add(callId);
             }
         }
+        // Make toggleCollapsible globally accessible
+        window.toggleCollapsible = toggleCollapsible;
+
 
         function showItemData(callId) {
             const call = calls.find(c => c.CallId === callId);
@@ -420,6 +531,8 @@
                 alert('No Item Data available for this call.');
             }
         }
+         // Make showItemData globally accessible
+        window.showItemData = showItemData;
 
         function showAfspraakData(callId) {
             const call = calls.find(c => c.CallId === callId);
@@ -429,13 +542,71 @@
                 alert('No Afspraak Data available for this call.');
             }
         }
+         // Make showAfspraakData globally accessible
+        window.showAfspraakData = showAfspraakData;
 
-        function formatDuration(seconds) {
-            if (seconds === null || seconds === undefined) return "-";
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-        }
+         // Implement the sendDoorsturen function
+         async function sendDoorsturen(callId, button) {
+             const url = `https://${currentBaseUrl}/doorsturen`; // Construct the full URL
+
+             // Disable the button temporarily
+             if (button) {
+                 button.disabled = true;
+                 button.textContent = 'Sending...';
+             }
+
+             try {
+                 const response = await fetch(url, {
+                     method: 'GET', // As per your C# example
+                     headers: {
+                         'CallerID': callId // Set the CallerID header
+                     }
+                 });
+
+                 if (response.ok) { // Check if the status code is in the 200-299 range
+                     alert(`Successfully sent Doorsturen request for Call ID: ${callId}`);
+                 } else {
+                     const errorText = await response.text(); // Get response body for more details
+                     alert(`Error sending Doorsturen request for Call ID: ${callId}. Status: ${response.status}. Message: ${errorText}`);
+                 }
+             } catch (error) {
+                 console.error('Error sending Doorsturen request:', error);
+                 alert(`Network error sending Doorsturen request for Call ID: ${callId}. Details: ${error.message}`);
+             } finally {
+                 // Re-enable the button
+                  if (button) {
+                     button.disabled = false;
+                     button.textContent = 'Doorsturen';
+                 }
+             }
+         }
+          // Make sendDoorsturen globally accessible
+        window.sendDoorsturen = sendDoorsturen;
+
+
+        // Event listeners for the environment switch buttons
+        lucyBtn.addEventListener('click', () => {
+            if (currentBaseUrl !== 'lucy.kprs-ai.online') {
+                currentBaseUrl = 'lucy.kprs-ai.online';
+                lucyBtn.classList.add('active');
+                accBtn.classList.remove('active');
+                connectWebSocket(); // Reconnect to the new environment
+            }
+        });
+
+        accBtn.addEventListener('click', () => {
+            if (currentBaseUrl !== 'acc.kprs-ai.online') {
+                currentBaseUrl = 'acc.kprs-ai.online';
+                accBtn.classList.add('active');
+                lucyBtn.classList.remove('active');
+                connectWebSocket(); // Reconnect to the new environment
+            }
+        });
+
+
+        // Initial connection on page load
+        connectWebSocket();
+
     </script>
 </body>
 </html>
