@@ -1,188 +1,441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Call Data Viewer</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    th {
-      background-color: #f4f4f4;
-    }
-    .transcript {
-      background-color: #eef;
-      padding: 10px;
-      margin: 10px 0;
-      display: none;
-    }
-    button {
-      padding: 5px 10px;
-      margin: 5px;
-      cursor: pointer;
-    }
-    /* Style for black and white checkboxes */
-    input[type="checkbox"] {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border: 1px solid #000; /* Black border */
-      background-color: #fff; /* White background */
-      cursor: default; /* Keep default cursor */
-    }
+    <meta charset="UTF-8">
+    <title>Call Data Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+            margin: 0;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #4f46e5;
+        }
+        #baseData {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        #baseData p {
+            margin-bottom: 0.75rem;
+            line-height: 1.5rem;
+        }
+        #callTable {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* for rounded corners and shadow */
+        }
+        #callTable thead th {
+            background-color: #6366f1;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #d1d5db;
+        }
+        #callTable tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: center;
+        }
+        #callTable tbody tr:last-child td {
+            border-bottom: none;
+        }
+        #callTable tbody tr:nth-child(odd) {
+            background-color: #f9fafb;
+        }
+        #callTable tbody tr:hover {
+            background-color: #ecf0fa;
+        }
+        .transcript {
+            background-color: #f9fafb;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            display: none;
+            border: 1px solid #e5e7eb;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 500;
+            border: none;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #4338ca;
+            transform: translateY(-2px);
+        }
+        button:active {
+            background-color: #3730a3;
+            transform: translateY(0);
+        }
+        /* Style for black and white checkboxes */
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 1rem;
+            height: 1rem;
+            border: 1px solid #000;
+            background-color: #fff;
+            cursor: default;
+            border-radius: 0.25rem;
+        }
+        input[type="checkbox"]:checked {
+            background-color: #000;
+            border-color: #000;
+        }
+        input[type="checkbox"]:disabled {
+            opacity: 0.7;
+        }
+        .checkpoint {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .checkpoint-label {
+            font-weight: 500;
+            color: #374151;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #callTable thead {
+                display: none;
+            }
+            #callTable tbody td {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 0.75rem;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            #callTable tbody tr {
+                margin-bottom: 1.5rem;
+                display: block;
+                border-radius: 0.75rem;
+                background-color: white;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            }
+            #callTable tbody td:before {
+                content: attr(data-label);
+                font-weight: 600;
+                display: inline-block;
+                width: 120px;
+                margin-right: 0.5rem;
+                color: #4f46e5;
+            }
+            .transcript {
+                margin-left: -1rem;
+                margin-right: -1rem;
+                border-radius: 0;
+            }
+        }
 
-    input[type="checkbox"]:checked {
-      background-color: #000; /* Black background when checked */
-      border-color: #000;
-    }
-  </style>
+        /* New styles for collapsible sections */
+        .collapsible {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 0.75rem;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #ddd;
+        }
+
+        .collapsible-content {
+            display: none;
+            overflow: hidden;
+            background-color: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .collapsible-content.show {
+            display: block;
+        }
+
+        .collapsible-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.active .collapsible-arrow {
+            transform: rotate(90deg);
+        }
+
+    </style>
 </head>
 <body>
-  <h1>Call Data Viewer</h1>
+    <div class="container">
+        <h1>Call Data Viewer</h1>
 
-  <div id="baseData"></div>
+        <div id="baseData"></div>
 
-  <table id="callTable">
-    <thead>
-      <tr>
-        <th>ToNumber</th>
-        <th>Doorgestuurd</th>
-        <th>Teruggebeld</th>
-        <th>FoutGesprek</th>
-        <th>Callinfo</th>
-        <th>Afgesloten</th>
-        <th>Afspraak Gepland</th>
-        <th>Datetime</th>
-        <th>Transcriptie</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+        <table id="callTable">
+            <thead>
+                <tr>
+                    <th>ToNumber</th>
+                    <th>Doorgestuurd</th>
+                    <th>Teruggebeld</th>
+                    <th>FoutGesprek</th>
+                    <th>Callinfo</th>
+                    <th>Afgesloten</th>
+                    <th>Afspraak Gepland</th>
+                    <th>Datetime</th>
+                    <th>Details</th> </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-  <script>
-    const ws = new WebSocket('wss://lucy.kprs-ai.online/LivaData');
+    <script>
+        const ws = new WebSocket('wss://lucy.kprs-ai.online/LivaData');
 
-    const baseDataDiv = document.getElementById('baseData');
-    const callTableBody = document.getElementById('callTable').querySelector('tbody');
+        const baseDataDiv = document.getElementById('baseData');
+        const callTableBody = document.getElementById('callTable').querySelector('tbody');
 
-    const calls = [];
-    const openTranscripts = new Set();
+        const calls = [];
+        const openTranscripts = new Set();
 
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-    };
+        ws.onopen = () => {
+            console.log('WebSocket connected');
+        };
 
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      if (msg.type === 'callData') {
-        baseDataDiv.innerHTML = `
-          <p><strong>Active Calls:</strong> ${msg.data.ActiveCalls}</p>
-          <p><strong>Calls in 24 Hours:</strong> ${msg.data.Calls24Hours}</p>
-          <p><strong>Calls in 8 Hours:</strong> ${msg.data.Calls8Hours}</p>
-          <p><strong>Calls in 1 Hour:</strong> ${msg.data.CallsHours}</p>
-          <p><strong>Successful Calls:</strong> ${msg.data.SuccesfulCalls}</p>
-          <p><strong>Teruggebeld Amount:</strong> ${msg.data.TeruggebeldAmount}</p>
-          <p><strong>FoutGesprek Amount:</strong> ${msg.data.FoutGesprekAmount}</p>
-          <p><strong>Doorgestuurd Amount:</strong> ${msg.data.DoorgestuurdAmount}</p>
-          <p><strong>WebSocket Server:</strong> ${msg.data.WebsocketServer}</p>
-          <p><strong>Datetime:</strong> ${msg.data.Datetime}</p>
-        `;
+        ws.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.type === 'callData') {
+                baseDataDiv.innerHTML = `
+                    <div class="bg-white rounded-md shadow-md p-4 mb-4">
+                        <p class="text-gray-700"><strong>Active Calls:</strong> <span class="text-blue-600">${msg.data.ActiveCalls}</span></p>
+                        <p class="text-gray-700"><strong>Calls in 24 Hours:</strong> <span class="text-blue-600">${msg.data.Calls24Hours}</span></p>
+                        <p class="text-gray-700"><strong>Calls in 8 Hours:</strong> <span class="text-blue-600">${msg.data.Calls8Hours}</span></p>
+                        <p class="text-gray-700"><strong>Calls in 1 Hour:</strong> <span class="text-blue-600">${msg.data.CallsHours}</span></p>
+                        <p class="text-gray-700"><strong>Successful Calls:</strong> <span class="text-green-600">${msg.data.SuccesfulCalls}</span></p>
+                        <p class="text-gray-700"><strong>Teruggebeld Amount:</strong> <span class="text-purple-600">${msg.data.TeruggebeldAmount}</span></p>
+                        <p class="text-gray-700"><strong>FoutGesprek Amount:</strong> <span class="text-red-600">${msg.data.FoutGesprekAmount}</span></p>
+                        <p class="text-gray-700"><strong>Doorgestuurd Amount:</strong> <span class="text-yellow-600">${msg.data.DoorgestuurdAmount}</span></p>
+                        <p class="text-gray-700"><strong>WebSocket Server:</strong> <span class="text-indigo-600">${msg.data.WebsocketServer ? 'Online' : 'Offline'}</span></p>
+                        <p class="text-gray-700"><strong>Datetime:</strong> <span class="text-gray-800">${msg.data.Datetime}</span></p>
+                    </div>
+                `;
 
-        const callIds = msg.data.callId;
-        for (const id in callIds) {
-          const call = callIds[id];
+                const callIds = msg.data.callId;
+                for (const id in callIds) {
+                    const call = callIds[id];
 
-          const callData = {
-            CallId: id,
-            ToNumber: call.ToNumberr || '-',
-            Doorgestuurd: call.Doorgestuurd,
-            Teruggebeld: call.Teruggebeld,
-            FoutGesprek: call.FoutGesprek,
-            Callinfo: call.callinfo || '-',
-            Closed: call.Closed,
-            AfspraakGepland: call.Afspraak && call.Afspraak.Id ? true : false,
-            Datetime: call.Datetime || '-',
-            Transcript: call.Transcript?.FullTranscript || []
-          };
+                    const callData = {
+                        CallId: id,
+                        ToNumber: call.ToNumberr || '-',
+                        Doorgestuurd: call.Doorgestuurd,
+                        Teruggebeld: call.Teruggebeld,
+                        FoutGesprek: call.FoutGesprek,
+                        Callinfo: call.callinfo || '-',
+                        Closed: call.Closed,
+                        AfspraakGepland: call.Afspraak && call.Afspraak.Id ? true : false,
+                        Datetime: call.Datetime || '-',
+                        Transcript: call.Transcript?.FullTranscript || [],
+                        Voornaam: call.Voornaam || '-',
+                        Postcode: call.Postcode || '-',
+                        Huisnummer: call.Huisnummer || '-',
+                        Straat: call.Street || '-',
+                        Error: call.Error,
+                        GotName: call.Checkpoints?.GotName || false,
+                        GotAdres: call.Checkpoints?.GotAdres || false,
+                        GotItem: call.Checkpoints?.GotItem || false,
+                        GotCategory: call.Checkpoints?.GotCategory || false,
+                        GotAvailabledates: call.Checkpoints?.GotAvailabledates || false,
+                        GotSelectedDate: call.Checkpoints?.GotSelectedDate || false,
+                        ItemData: call.Item,
+                        AfspraakData: call.Afspraak,
+                        TwillioData: call.Twillio
+                    };
 
-          const existingIndex = calls.findIndex(c => c.CallId === id);
-          if (existingIndex !== -1) {
-            calls[existingIndex] = callData;
-          } else {
-            calls.unshift(callData);
-          }
+                    const existingIndex = calls.findIndex(c => c.CallId === id);
+                    if (existingIndex !== -1) {
+                        calls[existingIndex] = callData;
+                    } else {
+                        calls.unshift(callData);
+                    }
+                }
+
+                updateTable();
+            }
+        };
+
+        function formatDuration(seconds) {
+            if (seconds === null || seconds === undefined) return "-";
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
         }
 
-        updateTable();
-      }
-    };
+        function updateTable() {
+            const previouslyOpen = new Set(openTranscripts);
+            openTranscripts.clear();
 
-    function updateTable() {
-      const previouslyOpen = new Set(openTranscripts);
-      openTranscripts.clear();
+            callTableBody.innerHTML = '';
 
-      callTableBody.innerHTML = '';
+            calls.forEach((call, index) => {
+                const row = document.createElement('tr');
+                const callId = call.CallId;
 
-      calls.forEach((call, index) => {
-        const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td data-label="ToNumber">${call.ToNumber}</td>
+                    <td data-label="Doorgestuurd"><input type="checkbox" ${call.Doorgestuurd ? 'checked' : ''} disabled></td>
+                    <td data-label="Teruggebeld"><input type="checkbox" ${call.Teruggebeld ? 'checked' : ''} disabled></td>
+                    <td data-label="FoutGesprek"><input type="checkbox" ${call.FoutGesprek ? 'checked' : ''} disabled></td>
+                    <td data-label="Callinfo">${call.Callinfo}</td>
+                    <td data-label="Afgesloten"><input type="checkbox" ${call.Closed ? 'checked' : ''} disabled></td>
+                    <td data-label="Afspraak Gepland"><input type="checkbox" ${call.AfspraakGepland ? 'checked' : ''} disabled></td>
+                    <td data-label="Datetime">${call.Datetime}</td>
+                    <td>
+                        <button class="collapsible" onclick="toggleCollapsible('${callId}')">
+                            Details
+                            <span class="collapsible-arrow">&#9654;</span>
+                        </button>
+                    </td>
+                `;
 
-        row.innerHTML = `
-          <td>${call.ToNumber}</td>
-          <td><input type="checkbox" ${call.Doorgestuurd ? 'checked' : ''} disabled></td>
-          <td><input type="checkbox" ${call.Teruggebeld ? 'checked' : ''} disabled></td>
-          <td><input type="checkbox" ${call.FoutGesprek ? 'checked' : ''} disabled></td>
-          <td>${call.Callinfo}</td>
-          <td><input type="checkbox" ${call.Closed ? 'checked' : ''} disabled></td>
-          <td><input type="checkbox" ${call.AfspraakGepland ? 'checked' : ''} disabled></td>
-          <td>${call.Datetime}</td>
-          <td><button onclick="toggleTranscript('${call.CallId}')">Show Transcript</button></td>
-        `;
+                row.classList.add('mb-4', 'rounded-md', 'bg-white', 'shadow-md');
+                callTableBody.appendChild(row);
 
-        callTableBody.appendChild(row);
+                const detailsRow = document.createElement('tr');
+                detailsRow.innerHTML = `<td colspan="9">
+                    <div class="collapsible-content" id="details-${callId}">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <p><strong>Transcript:</strong></p>
+                                <div class="transcript">
+                                    ${call.Transcript.length > 0
+                                        ? call.Transcript.map(t => `<p><strong>${t.role}:</strong> ${t.content}</p>`).join('')
+                                        : '<p><em>No transcript available</em></p>'
+                                    }
+                                </div>
+                            </div>
+                            <div>
+                                <p><strong>Got Details:</strong></p>
+                                <p>GotName: <input type="checkbox" ${call.GotName ? 'checked' : ''} disabled></p>
+                                <p>GotAdres: <input type="checkbox" ${call.GotAdres ? 'checked' : ''} disabled></p>
+                                <p>GotItem: <button onclick="showItemData('${callId}')">Show Item Data</button></p>
+                                <p>GotCategory: <input type="checkbox" ${call.GotCategory ? 'checked' : ''} disabled></p>
+                                <p>GotAvailabledates: <input type="checkbox" ${call.GotAvailabledates ? 'checked' : ''} disabled></p>
+                                <p>GotSelectedDate: <button onclick="showAfspraakData('${callId}')">Show Afspraak Data</button></p>
+                            </div>
+                            <div>
+                                <p><strong>Personal Details:</strong></p>
+                                <p>Voornaam: ${call.Voornaam}</p>
+                                <p>Postcode: ${call.Postcode}</p>
+                                <p>Huisnummer: ${call.Huisnummer}</p>
+                                <p>Straat: ${call.Straat}</p>
+                                <p>Error: <input type="checkbox" ${call.Error ? 'checked' : ''} disabled></p>
+                            </div>
+                            <div>
+                                <p><strong>Call Details:</strong></p>
+                                <p>Duration: ${formatDuration(parseInt(call.TwillioData?.Duration))}</p>
+                                <p>Recording URL: ${call.Closed ? `<a href="${call.TwillioData?.RecordingURL}" target="_blank">Recording</a>` : '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </td></tr>`;
+                callTableBody.appendChild(detailsRow);
 
-        const transcriptRow = document.createElement('tr');
-        transcriptRow.innerHTML = `
-          <td colspan="9">
-            <div id="transcript-${call.CallId}" class="transcript">
-              ${call.Transcript.length > 0
-                ? call.Transcript.map(t => `<p><strong>${t.role}:</strong> ${t.content}</p>`).join('')
-                : '<p><em>No transcript available</em></p>'
-              }
-            </div>
-          </td>
-        `;
-        callTableBody.appendChild(transcriptRow);
-
-        if (previouslyOpen.has(call.CallId)) {
-          document.getElementById(`transcript-${call.CallId}`).style.display = 'block';
-          openTranscripts.add(call.CallId);
+                if (previouslyOpen.has(callId)) {
+                    document.getElementById(`details-${callId}`).classList.add('show');
+                    const button = document.querySelector(`[onclick="toggleCollapsible('${callId}')"]`);
+                    if (button) {
+                        button.classList.add('active');
+                    }
+                    openTranscripts.add(callId);
+                }
+            });
         }
-      });
-    }
 
-    function toggleTranscript(callId) {
-      const el = document.getElementById(`transcript-${callId}`);
-      if (el.style.display === 'none' || el.style.display === '') {
-        el.style.display = 'block';
-        openTranscripts.add(callId);
-      } else {
-        el.style.display = 'none';
-        openTranscripts.delete(callId);
-      }
-    }
-  </script>
+
+
+        function toggleCollapsible(callId) {
+            const content = document.getElementById(`details-${callId}`);
+            const button = document.querySelector(`[onclick="toggleCollapsible('${callId}')"]`);
+
+
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                openTranscripts.delete(callId);
+                if (button) {
+                  button.classList.remove('active');
+                }
+            } else {
+                content.classList.add('show');
+                openTranscripts.add(callId);
+                 if (button) {
+                    button.classList.add('active');
+                }
+            }
+             if (button) {
+                const arrow = button.querySelector('.collapsible-arrow');
+                if (arrow) {
+                    arrow.classList.toggle('collapsible-arrow');
+                }
+            }
+        }
+
+        function showItemData(callId) {
+            const call = calls.find(c => c.CallId === callId);
+            if (call && call.ItemData) {
+                alert(JSON.stringify(call.ItemData, null, 2));
+            } else {
+                alert('No Item Data available for this call.');
+            }
+        }
+
+        function showAfspraakData(callId) {
+            const call = calls.find(c => c.CallId === callId);
+            if (call && call.AfspraakData) {
+                alert(JSON.stringify(call.AfspraakData, null, 2));
+            } else {
+                alert('No Afspraak Data available for this call.');
+            }
+        }
+
+        function formatDuration(seconds) {
+            if (seconds === null || seconds === undefined) return "-";
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+    </script>
 </body>
 </html>
