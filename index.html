@@ -14,10 +14,16 @@
             margin: 0;
             background-color: #f3f4f6;
             color: #1f2937;
+            display: flex; /* Use flexbox for centering prompt */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure body takes full height */
         }
         .container {
             max-width: 1200px; /* Add a max width for better readability on large screens */
+            width: 100%; /* Make container take full width up to max-width */
             margin: 0 auto;
+            display: none; /* Hide main content by default */
         }
         h1 {
             text-align: center;
@@ -30,6 +36,7 @@
         }
         #environmentSwitch button {
             margin: 0 0.5rem; /* Space between buttons */
+             min-width: 80px; /* Give buttons a minimum width */
         }
         #environmentSwitch button.active {
             background-color: #3730a3; /* Darker background for active button */
@@ -55,6 +62,7 @@
             border-radius: 0.75rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
             overflow: hidden; /* for rounded corners and shadow */
+             table-layout: auto; /* Use auto layout */
         }
         #callTable thead th {
             background-color: #6366f1;
@@ -63,22 +71,37 @@
             text-align: center;
             font-weight: 600;
             border-bottom: 2px solid #d1d5db;
+             word-break: break-word; /* Allow header text to break */
         }
         #callTable tbody td {
             padding: 1rem;
             border-bottom: 1px solid #e5e7eb;
             text-align: center;
+             word-break: break-word; /* Allow cell text to break */
         }
          /* Adjust text alignment for left-aligned details cells in responsive view */
         @media (max-width: 768px) {
+            body {
+                align-items: flex-start; /* Reset alignment for mobile */
+            }
+             .container {
+                 padding: 0 10px; /* Add horizontal padding */
+                 margin-top: 20px; /* Add top margin */
+             }
+            #callTable thead {
+                display: none;
+            }
             #callTable tbody td[data-label],
             #callTable tbody td:not([data-label]) {
                  text-align: left; /* Ensure all cells in responsive mode are left-aligned */
                  padding-left: 0.75rem; /* Add padding */
                  padding-right: 0.75rem; /* Add padding */
+                 display: block; /* Stack table cells */
+                 width: 100%; /* Full width */
             }
              #callTable tbody td:not([data-label]):before {
                  content: ''; /* Hide the label for non-data-label cells like the details row */
+                 display: none; /* Ensure label is hidden */
              }
             #callTable tbody tr td:first-child { /* Keep the first cell (ToNumber) consistent */
                  padding-top: 0.75rem;
@@ -89,7 +112,10 @@
             }
             #callTable tbody tr {
                 margin-bottom: 1.5rem;
-                display: block; /* Make rows stack */
+                display: block;
+                border-radius: 0.75rem;
+                background-color: white;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
             }
              #callTable tbody tr:last-child {
                  margin-bottom: 0; /* No margin after the last stacked row */
@@ -111,6 +137,13 @@
              .collapsible {
                  margin-bottom: 0.5rem; /* Adjust margin */
                  margin-top: 0.5rem; /* Add margin */
+             }
+              .checkpoint {
+                 flex-direction: column; /* Stack items in checkpoint */
+                 align-items: flex-start; /* Align items to the start */
+             }
+              .checkpoint-label {
+                 margin-bottom: 0.25rem; /* Space between label and checkbox/button */
              }
         }
 
@@ -136,14 +169,31 @@
             cursor: default;
             border-radius: 0.25rem;
             vertical-align: middle; /* Align checkbox vertically */
+             flex-shrink: 0; /* Prevent checkbox from shrinking */
         }
         input[type="checkbox"]:checked {
             background-color: #000;
             border-color: #000;
         }
         input[type="checkbox"]:disabled {
-            opacity: 0.7;
+            opacity: 1; /* Keep full opacity for disabled checkboxes */
+             cursor: default; /* Ensure cursor is default */
         }
+
+         /* Styles for the colored status checkbox */
+         input[type="checkbox"].ws-status-checkbox {
+             border-color: transparent; /* Hide border for colored state */
+         }
+         input[type="checkbox"].ws-status-checkbox:checked {
+             background-color: #10b981; /* Green for online */
+             border-color: transparent;
+         }
+         input[type="checkbox"].ws-status-checkbox:not(:checked) {
+             background-color: #ef4444; /* Red for offline */
+             border-color: transparent;
+         }
+
+
          /* New styles for collapsible sections */
         .collapsible {
             background-color: #eee;
@@ -208,10 +258,52 @@
              transform: translateY(0);
          }
 
+         /* Styles for the password prompt */
+         #passwordPrompt {
+             background-color: white;
+             padding: 2rem;
+             border-radius: 0.75rem;
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+             text-align: center;
+         }
+         #passwordPrompt input[type="password"] {
+             padding: 0.75rem;
+             margin-right: 10px;
+             border: 1px solid #ccc;
+             border-radius: 0.5rem;
+             font-size: 1rem;
+         }
+         #passwordPrompt button {
+             padding: 0.75rem 1.5rem;
+             background-color: #4f46e5;
+             color: white;
+             border: none;
+             border-radius: 0.5rem;
+             cursor: pointer;
+         }
+          #passwordPrompt button:hover {
+            background-color: #4338ca;
+          }
+          #passwordPrompt button:active {
+            background-color: #3730a3;
+          }
+         #passwordPrompt .error {
+             color: red;
+             margin-top: 1rem;
+         }
 
     </style>
 </head>
 <body>
+
+    <div id="passwordPrompt">
+        <h2>Enter Password</h2>
+        <input type="password" id="passwordInput" placeholder="Password">
+        <button id="loginButton">Login</button>
+        <p id="loginError" class="error" style="display:none;"></p>
+    </div>
+
+
     <div class="container">
         <h1>Call Data Viewer</h1>
 
@@ -226,15 +318,10 @@
             <thead>
                 <tr>
                     <th>ToNumber</th>
-                    <th>Doorgestuurd</th>
-                    <th>Teruggebeld</th>
-                    <th>FoutGesprek</th>
-                    <th>Callinfo</th>
-                    <th>Afgesloten</th>
-                    <th>Afspraak Gepland</th>
-                    <th>Datetime</th>
+                    <th>Door<br>gestuurd</th> <th>Terug<br>gebeld</th> <th>Fout<br>Gesprek</th> <th>Callinfo</th>
+                    <th>Afge<br>sloten</th> <th>Afspraak<br>Gepland</th> <th>Datetime</th>
                     <th>Details</th>
-                    <th>Doorsturen</th> </tr>
+                    <th>Door<br>sturen</th> </tr>
             </thead>
             <tbody></tbody>
         </table>
@@ -243,6 +330,13 @@
     <script>
         let ws = null;
         let currentBaseUrl = 'lucy.kprs-ai.online'; // Default to Lucy
+
+        const passwordPromptDiv = document.getElementById('passwordPrompt');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginButton = document.getElementById('loginButton');
+        const loginError = document.getElementById('loginError');
+        const mainContainer = document.querySelector('.container'); // Get the main content container
+
 
         const baseDataDiv = document.getElementById('baseData');
         const callTableBody = document.getElementById('callTable').querySelector('tbody');
@@ -265,13 +359,23 @@
                 openTranscripts.clear();
                 updateTable();
                 baseDataDiv.innerHTML = ''; // Clear base data display
+                 // Hide any previous error message
+                 const wsStatusCheckbox = baseDataDiv.querySelector('.ws-status-checkbox');
+                 if(wsStatusCheckbox) {
+                      wsStatusCheckbox.checked = true; // Set status to online on successful connect
+                 }
             };
 
             ws.onmessage = (event) => {
                 const msg = JSON.parse(event.data);
                 if (msg.type === 'callData') {
+                    // Update Base Data
                     baseDataDiv.innerHTML = `
                         <div class="bg-white rounded-md shadow-md p-4 mb-4">
+                             <div class="checkpoint">
+                                <span class="checkpoint-label">WebSocket Server:</span>
+                                <input type="checkbox" class="ws-status-checkbox" ${msg.data.WebsocketServer ? 'checked' : ''} disabled>
+                             </div>
                             <p class="text-gray-700"><strong>Active Calls:</strong> <span class="text-blue-600">${msg.data.ActiveCalls}</span></p>
                             <p class="text-gray-700"><strong>Calls in 24 Hours:</strong> <span class="text-blue-600">${msg.data.Calls24Hours}</span></p>
                             <p class="text-gray-700"><strong>Calls in 8 Hours:</strong> <span class="text-blue-600">${msg.data.Calls8Hours}</span></p>
@@ -280,11 +384,11 @@
                             <p class="text-gray-700"><strong>Teruggebeld Amount:</strong> <span class="text-purple-600">${msg.data.TeruggebeldAmount}</span></p>
                             <p class="text-gray-700"><strong>FoutGesprek Amount:</strong> <span class="text-red-600">${msg.data.FoutGesprekAmount}</span></p>
                             <p class="text-gray-700"><strong>Doorgestuurd Amount:</strong> <span class="text-yellow-600">${msg.data.DoorgestuurdAmount}</span></p>
-                            <p class="text-gray-700"><strong>WebSocket Server:</strong> <span class="text-indigo-600">${msg.data.WebsocketServer ? 'Online' : 'Offline'}</span></p>
                             <p class="text-gray-700"><strong>Datetime:</strong> <span class="text-gray-800">${msg.data.Datetime}</span></p>
                         </div>
                     `;
 
+                    // Update Call Data
                     const callIds = msg.data.callId;
                     const incomingCalls = [];
                     for (const id in callIds) {
@@ -348,8 +452,8 @@
 
             ws.onerror = (error) => {
                 console.error('WebSocket error:', error);
-                 // Display an error message on the page
-                 baseDataDiv.innerHTML = `<div style="color: red; text-align: center;">WebSocket Error: Could not connect to ${currentBaseUrl}. Please check the server status.</div>`;
+                 // Display an error message on the page or update status indicator
+                 baseDataDiv.innerHTML = `<div style="color: red; text-align: center; padding-bottom: 1rem;">WebSocket Error: Could not connect to ${currentBaseUrl}. Please check the server status.</div>`;
                  callTableBody.innerHTML = ''; // Clear table on error
                  calls.length = 0; // Clear calls array
                  openTranscripts.clear();
@@ -362,6 +466,21 @@
                       // Optionally attempt to reconnect after a delay if it wasn't a clean close
                      // setTimeout(connectWebSocket, 5000);
                  }
+                  // Update status indicator to offline
+                  const wsStatusCheckbox = baseDataDiv.querySelector('.ws-status-checkbox');
+                  if (wsStatusCheckbox) {
+                      wsStatusCheckbox.checked = false;
+                  } else {
+                       // If baseData was cleared by an error, show the offline status indicator
+                       baseDataDiv.innerHTML = `
+                           <div class="bg-white rounded-md shadow-md p-4 mb-4">
+                                <div class="checkpoint">
+                                   <span class="checkpoint-label">WebSocket Server:</span>
+                                   <input type="checkbox" class="ws-status-checkbox" disabled> </div>
+                                <p class="text-gray-700 text-center"><em>Data unavailable due to connection issue.</em></p>
+                           </div>
+                       `;
+                  }
              };
         }
 
@@ -447,7 +566,7 @@
                                 </div>
                                  <div class="checkpoint">
                                     <span class="checkpoint-label">GotItem:</span>
-                                    <button onclick="showItemData('${callId}')">Show Item Data</button>
+                                     ${call.GotItem ? `<button onclick="showItemData('${callId}')">Show Item Data</button>` : '<em>Not Set</em>'}
                                 </div>
                                  <div class="checkpoint">
                                     <span class="checkpoint-label">GotCategory:</span>
@@ -459,7 +578,7 @@
                                 </div>
                                  <div class="checkpoint">
                                     <span class="checkpoint-label">GotSelectedDate:</span>
-                                     ${call.AfspraakGepland ? `<button onclick="showAfspraakData('${callId}')">Show Afspraak Data</button>` : '<em>Not Set</em>'}
+                                     ${call.GotSelectedDate ? `<button onclick="showAfspraakData('${callId}')">Show Afspraak Data</button>` : '<em>Not Set</em>'}
                                  </div>
                             </div>
                             <div>
@@ -490,7 +609,7 @@
                          button.classList.add('active');
                          const arrow = button.querySelector('.collapsible-arrow');
                          if (arrow) {
-                             arrow.style.transform = 'rotate(90deg)'; // Directly apply style as class toggle might be tricky here
+                             arrow.style.transform = 'rotate(90deg)'; // Directly apply style
                          }
                         openTranscripts.add(callId); // Add back to the set
                     }
@@ -549,6 +668,13 @@
          async function sendDoorsturen(callId, button) {
              const url = `https://${currentBaseUrl}/doorsturen`; // Construct the full URL
 
+             // Ask for confirmation
+             const confirmSend = confirm(`Are you sure you want to send Doorsturen request for Call ID: ${callId}?`);
+             if (!confirmSend) {
+                 return; // Stop if user cancels
+             }
+
+
              // Disable the button temporarily
              if (button) {
                  button.disabled = true;
@@ -603,9 +729,42 @@
             }
         });
 
+        // Password Check Logic
+        function checkPassword() {
+            const enteredPassword = passwordInput.value;
+            const correctPassword = "password"; // The simple password
 
-        // Initial connection on page load
-        connectWebSocket();
+            if (enteredPassword === correctPassword) {
+                passwordPromptDiv.style.display = 'none'; // Hide the prompt
+                mainContainer.style.display = 'block'; // Show the main content
+                 connectWebSocket(); // Start the WebSocket connection
+            } else {
+                loginError.textContent = "Incorrect password.";
+                loginError.style.display = 'block';
+                passwordInput.value = ''; // Clear the input
+                 passwordInput.focus(); // Put focus back on the input
+            }
+        }
+
+        // Event listener for the login button
+        loginButton.addEventListener('click', checkPassword);
+
+        // Allow pressing Enter in the password field
+        passwordInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission if it were a form
+                checkPassword();
+            }
+        });
+
+        // Set focus on the password input when the page loads
+        window.addEventListener('load', () => {
+            passwordInput.focus();
+        });
+
+        // Initial setup: main content is hidden by default via CSS
+        // The connectWebSocket is called *after* successful login
+
 
     </script>
 </body>
